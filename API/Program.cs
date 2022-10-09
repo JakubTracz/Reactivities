@@ -1,26 +1,9 @@
+using API.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
-var services = builder.Services;
-
-services.AddControllers();
-services.AddEndpointsApiExplorer();
-services.AddSwaggerGen();
-services.AddDbContext<DataContext>(optionsBuilder =>
-{
-    optionsBuilder.UseSqlite(builder.Configuration.GetConnectionString("Reactivities"));
-});
-services.AddCors(options =>
-{
-    options.AddPolicy("CorsPolicy", policyBuilder =>
-    {
-        policyBuilder
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .WithOrigins("http://localhost:3000");
-    });
-});
+builder.Services.AddServices(builder.Configuration);
 
 var app = builder.Build();
 
