@@ -11,6 +11,16 @@ services.AddDbContext<DataContext>(optionsBuilder =>
 {
     optionsBuilder.UseSqlite(builder.Configuration.GetConnectionString("Reactivities"));
 });
+services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", policyBuilder =>
+    {
+        policyBuilder
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .WithOrigins("http://localhost:3000");
+    });
+});
 
 var app = builder.Build();
 
@@ -21,9 +31,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("CorsPolicy");
 app.UseAuthorization();
 app.MapControllers();
-
 using var scope = app.Services.CreateScope();
 
 try
@@ -35,7 +45,7 @@ try
 catch (Exception e)
 {
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-    logger.LogError(e,"An error occured during db creation");
+    logger.LogError(e, "An error occured during db creation");
     throw;
 }
 
